@@ -5,6 +5,10 @@ Requirements:
 * Docker
 * Vim installation on mac OS x
 * Vim-plug installation and installation of plugins on host machine
+* Environment variable `VIM_CONFIG_DIR` pointing to checkout of 
+`https://github.com/roumail/vim-rc`
+* `launch_vim.sh` in your path, so you can launch vim in a directory of your 
+choice
 
 ## Host Machine Setup
 Before running the Docker container, ensure that the following directories are 
@@ -21,24 +25,12 @@ curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
 be populated after running :PlugInstall in Vim.
 
 ## Launching Vim
-Use the provided `launch_script.sh` to start the containerized Vim environment:
-
-```bash
-#!/usr/bin/env bash
-# launch_vim.sh
-
-docker run --rm -it \
-  -v $(pwd)/.vim:/root/.vim \
-  -v ~/.vim/autoload:/root/.vim/autoload \
-  -v ~/.vim/plugged:/root/.vim/plugged \
-  -v $(pwd)/.vimrc:/root/.vimrc \
-  custom-vim
-```
-This script:
-
-Mounts your `.vimrc` and modular configuration files in the `.vim` directory 
-into the container. Ensures autoload and plugged directories are available in 
-the container for plugin management.
+Use the provided `launch_script.sh` to start the containerized Vim environment in 
+the directory where you want to launch vim. This script would need to have the 
+configuration parameter `VIM_CONFIG_DIR` declared, since otherwise, we don't 
+have a way to access the `.vimrc` and modular configuration files in the
+ `.vim` directory for the container. Please ensure that the autoload and 
+ plugged directories are available in the container for plugin management.
 
 ## Notes for Windows Users
 This setup has been tested on macOS only. If you are using Windows:
