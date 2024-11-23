@@ -2,8 +2,8 @@
 source ~/.vim/config/plugins/init.vim
 
 " Load plugin configurations
-"source ~/.vim/config/plugins/fern.vim
 "source ~/.vim/config/plugins/airline.vim
+"source ~/.vim/config/plugins/fern.vim
 "source ~/.vim/config/plugins/fzf.vim
 
 " Load general settings and mappings
