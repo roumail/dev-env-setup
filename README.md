@@ -4,7 +4,7 @@ Requirements:
 * vim-plug
 * Docker
 * Vim installation on mac OS x
-
+* Vim-plug installation and installation of plugins on host machine
 
 ## Host Machine Setup
 Before running the Docker container, ensure that the following directories are 
@@ -56,6 +56,12 @@ docker run --rm -it `
   -v "${PWD}\.vimrc:/root/.vimrc" `
   custom-vim
 ```
+
+## Process for changing .vimrc
+
+When modifying the .vimrc, such as uncommenting a plugin configuration like 
+airline, you would need to kill the current session and relaunch vim using the 
+`launch_script`
 
 ## Testing Plugin Installation
 To verify that plugins are installed and configured correctly:
