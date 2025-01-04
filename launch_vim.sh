@@ -18,6 +18,8 @@ if [ ! -d "$APP_CODE_DIR" ]; then
   exit 1
 fi
 
+cd "$APP_CODE_DIR"
+
 vim -u "$VIM_CONFIG_DIR/.vimrc"
 
 # docker run --rm -it \
