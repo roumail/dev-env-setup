@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
 
-# Check if VIM_CONFIG_DIR is provided
 if [ -z "$1" ]; then
-  echo "Usage: $0 <VIM_CONFIG_DIR> [APP_CODE_DIR]" >&2
+  echo "Usage: $0 <VIM_CONFIG_DIR> <APP_CODE_DIR>" >&2
   exit 1
 fi
 
@@ -16,9 +15,9 @@ if [ ! -d "$VIM_CONFIG_DIR" ]; then
   exit 1
 fi
 
-docker run --rm -it \
-  -v "$APP_CODE_DIR":/workspace \
-  -v "$VIM_CONFIG_DIR/.vim":/root/.vim \
-  -v "$VIM_CONFIG_DIR/.vimrc":/root/.vimrc \
-   -w /workspace \
-  custom-vim
+vim -u "$VIM_CONFIG_DIR/.vimrc"
+
+# docker run --rm -it \
+#   -v /Users/rohailtaimour/home/1_Projects/vim-configs:/vim-rc \
+#   -v /Users/rohailtaimour/home/1_Projects/vim-test:/workspace \
+#   custom-vim /vim-rc /workspace
