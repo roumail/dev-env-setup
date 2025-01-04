@@ -1,5 +1,7 @@
 FROM debian:latest
-RUN apt update && apt install -y vim curl git
+RUN apt update && apt install -y vim curl git bash
+
+RUN usermod -s /bin/bash root
 
 # Install vim-plug
 RUN curl -fLo /root/.vim/autoload/plug.vim --create-dirs \
