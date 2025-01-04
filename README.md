@@ -1,66 +1,115 @@
-# Setup Vim
+# Setup Vim in a Container
+The purpose of this project is to allow you to open any directory of your choice 
+in a pre-configured Vim environment running inside a Docker container. This lets you:
 
-Requirements:
-* vim-plug
-* Docker
-* Vim installation on mac OS x
-* Vim-plug installation and installation of plugins on host machine
-* Environment variable `VIM_CONFIG_DIR` pointing to checkout of 
-`https://github.com/roumail/vim-rc`
-* `launch_vim.sh` in your path, so you can launch vim in a directory of your 
-choice
+* Mount your custom Vim configs and plugins.
+* Mount any local project directory.
+* Quickly bootstrap the same Vim environment on different machines (Windows, macOS, etc.).
 
-## Host Machine Setup
-Before running the Docker container, ensure that the following directories are 
-present on your host machine:
+## Directory Structure
+You’ll need three main directories:
 
-`~/.vim/autoload`: This directory must contain the plug.vim file, which is the 
-core script for vim-plug. Install it with:
+vim-rc (this repo’s directory, containing Docker build instructions, docker-compose.yml, etc.)
 
 ```bash
-curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-```
-`~/.vim/plugged`: This directory is where vim-plug installs plugins. It will 
-be populated after running :PlugInstall in Vim.
-
-## Launching Vim
-Use the provided `launch_script.sh` to start the containerized Vim environment in 
-the directory where you want to launch vim. This script would need to have the 
-configuration parameter `VIM_CONFIG_DIR` declared, since otherwise, we don't 
-have a way to access the `.vimrc` and modular configuration files in the
- `.vim` directory for the container. Please ensure that the autoload and 
- plugged directories are available in the container for plugin management.
-
-## Notes for Windows Users
-This setup has been tested on macOS only. If you are using Windows:
-
-Replace paths in the `launch_script` with appropriate Windows paths.
-
-Ensure Docker's volume mounting is correctly configured for Windows file paths.
-Example modification for Windows (PowerShell):
-
-```powershell
-docker run --rm -it `
-  -v "${PWD}\.vim:/root/.vim" `
-  -v "$HOME\.vim\autoload:/root/.vim/autoload" `
-  -v "$HOME\.vim\plugged:/root/.vim/plugged" `
-  -v "${PWD}\.vimrc:/root/.vimrc" `
-  custom-vim
+vim-rc
+├── Dockerfile
+├── docker-compose.yml
+├── README.md
+└── assets/
 ```
 
-## Process for changing .vimrc
+vim-configs (where your .vimrc and .vim/ config live)
 
-When modifying the .vimrc, such as uncommenting a plugin configuration like 
-airline, you would need to kill the current session and relaunch vim using the 
-`launch_script`
-
-## Testing Plugin Installation
-To verify that plugins are installed and configured correctly:
-
-Launch Vim in the container:
 ```bash
-./launch_script.sh
+vim-configs
+├── .vim/
+│   └── config/
+│       ├── plugins/
+│       └── ...
+└── .vimrc
 ```
-Run :PlugStatus to check the status of installed plugins.
-If plugins are missing, run :PlugInstall to install them.
+Your project directory (the one you want to edit with Vim). For example, go-tutorial.
+
+```bash
+/home/go-tutorial
+├── main.go
+├── go.mod
+├── ...
+```
+
+## Docker Compose Overview
+Within vim-rc, you have:
+
+A Dockerfile that:
+
+* Installs Vim (plus optional packages like curl, git).
+* Sets a WORKDIR /root/workspace.
+* Uses a simple CMD ["vim"] or similar instruction to launch Vim.
+
+A docker-compose.yml file that:
+
+* Builds from the Dockerfile.
+* Mounts your vim configs into the container (e.g., /root/.vimrc, /root/.vim) or another path (depending on your strategy).
+* Mounts your project directory into /root/workspace.
+
+## Quick Start
+Clone or copy the `vim-rc` repository to your machine.
+
+Ensure you have Docker desktop installed.
+
+Place your `.vimrc` and `.vim` folder in vim-configs. You can also checkout the 
+git repo [here]()
+
+Build the Docker image:
+
+```bash
+cd vim-test
+docker compose build vim
+```
+This will use the local Dockerfile to create a custom Vim image.
+
+Run the containerized Vim, overriding the `HOST_MYAPP_DIR` environment variable 
+to point to the directory you want to edit. For example:
+
+```bash
+HOST_MYAPP_DIR=/Users/rohailtaimour/home/1_Projects/go-tutorial \
+docker compose run --rm vim
+```
+HOST_MYAPP_DIR is used in docker-compose.yml to mount that local folder into 
+`/root/workspace` (or another path).
+Your Vim configs are also mounted so the container sees .vimrc and .vim/ 
+exactly as on your host.
+The container automatically CDs to /root/workspace and launches Vim.
+
+4. Example .vimrc and .vim Folder
+Inside vim-configs, you might organize your config like this:
+
+```bash
+vim-configs
+├── .vimrc
+└── .vim
+    └── config
+        ├── plugins
+        │   ├── init.vim
+        │   ├── airline.vim
+        │   ├── fern.vim
+        │   └── ...
+        ├── settings.vim
+        ├── keymaps.vim
+        ├── ui.vim
+        └── ...
+```
+
+In your .vimrc, you can source these files, for example:
+
+```bash
+" Load plugins
+source /root/.vim/config/plugins/init.vim
+
+" Load other config
+source /root/.vim/config/settings.vim
+source /root/.vim/config/keymaps.vim
+source /root/.vim/config/ui.vim
+...
+```
