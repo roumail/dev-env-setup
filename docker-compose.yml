@@ -1,7 +1,9 @@
 services:
   vim:
-    image: custom-vim
-    command: ["/vim-rc", "/workspace"]
+    build:
+      context: .        
+      dockerfile: Dockerfile
     volumes:
-      - "${HOST_VIM_CONFIG_DIR}:/vim-rc"
-      - "${HOST_MYAPP_DIR}:/workspace"
+      - "${HOST_VIM_CONFIG_DIR}/.vimrc:/root/.vimrc"
+      - "${HOST_VIM_CONFIG_DIR}/.vim:/root/.vim" 
+      - "${HOST_MYAPP_DIR}:/root/workspace"
