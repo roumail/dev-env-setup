@@ -1,6 +1,7 @@
 FROM debian:latest
-RUN apt update && apt install -y vim curl git bash
+RUN apt-get update && apt-get install -y vim xclip curl git bash
 
+# Set bash as default terminal for root user
 RUN usermod -s /bin/bash root
 
 # Install vim-plug
