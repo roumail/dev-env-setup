@@ -1,8 +1,32 @@
 services:
-  vim:
+  fancy_bash:
     build:
       context: .        
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.bash
+    image: dev-env_bash:latest
+    environment:
+      - HISTCONTROL=ignoredups:ignorespace
+      - HISTSIZE=10000
+      - HISTFILESIZE=20000
+    # container_name: dev-env_bash
+    stdin_open: true
+    tty: true
+    working_dir: /root/workspace
+    command: ["/bin/bash"]
+    volumes:
+      - "${HOST_BASHRC_DIR}/.bashrc:/root/.bashrc"
+      - "./.bash_history:/root/.bash_history"
+  
+  vim:
+    image: dev-env_bash:latest
+    build:
+      context: .        
+      dockerfile: Dockerfile.vim
+    depends_on:
+      - fancy_bash
+    working_dir: /root/workspace
+    stdin_open: true
+    tty: true
     volumes:
       - "${HOST_VIM_CONFIG_DIR}/.vimrc:/root/.vimrc"
       - "${HOST_VIM_CONFIG_DIR}/.vim/config:/root/.vim/config" 
