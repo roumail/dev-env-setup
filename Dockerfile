@@ -1,5 +1,7 @@
 FROM debian:latest
-RUN apt-get update && apt-get install -y vim xclip curl git bash
+# vim-gtk3 for terminal support (xterm_clipboard feature)
+# xclip for the mechanism allowing Vim to interact with the clipboard
+RUN apt-get update && apt-get install -y vim-gtk3 xclip curl git bash
 
 # Set bash as default terminal for root user
 RUN usermod -s /bin/bash root
