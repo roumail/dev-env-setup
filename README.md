@@ -1,115 +1,74 @@
-# Setup Vim in a Container
-The purpose of this project is to allow you to open any directory of your choice 
-in a pre-configured Vim environment running inside a Docker container. This lets you:
+# Dev env setup
 
-* Mount your custom Vim configs and plugins.
-* Mount any local project directory.
-* Quickly bootstrap the same Vim environment on different machines (Windows, macOS, etc.).
+This project contains docker-compose files for dev tools like vim and bash. The 
+vim setup in particular is meant to allow opening any directory in a pre-configured
+Vim environment running inside a Docker container. This lets you:
+
+* Mount custom Vim configs and plugins.
+* Mount any project directory from your host machine.
+* Quickly bootstrap the same Vim environment on different machines (Windows, 
+macOS, etc.).
+* Experiment with config changes or even have multiple different containers 
+running under different configurations
+
+## TODO:
+
+* Update documentation 
+* vim-rc to have a better name
 
 ## Directory Structure
-You’ll need three main directories:
+Apart from this repository, you'd also need the `dotfiles` repository, as well 
+as the directory you want to load. 
 
-vim-rc (this repo’s directory, containing Docker build instructions, docker-compose.yml, etc.)
-
-```bash
-vim-rc
-├── Dockerfile
-├── docker-compose.yml
-├── README.md
-└── assets/
-```
-
-vim-configs (where your .vimrc and .vim/ config live)
+The dotfile's repo is where the .vimrc and .vim/ config would live, but you 
+can also pass different config paths if you desire a different setup.
 
 ```bash
-vim-configs
+dotfiles/vim-rc/
 ├── .vim/
 │   └── config/
 │       ├── plugins/
 │       └── ...
 └── .vimrc
 ```
-Your project directory (the one you want to edit with Vim). For example, go-tutorial.
 
-```bash
-/home/go-tutorial
-├── main.go
-├── go.mod
-├── ...
-```
-
-## Docker Compose Overview
-Within vim-rc, you have:
-
-A Dockerfile that:
-
-* Installs Vim (plus optional packages like curl, git).
-* Sets a WORKDIR /root/workspace.
-* Uses a simple CMD ["vim"] or similar instruction to launch Vim.
-
-A docker-compose.yml file that:
-
-* Builds from the Dockerfile.
-* Mounts your vim configs into the container (e.g., /root/.vimrc, /root/.vim) or another path (depending on your strategy).
-* Mounts your project directory into /root/workspace.
+Within this repository, we have a base dockerfile containing bash niceties and 
+a setup for vim. The idea is for the `bash` setup to be integrated so that 
+`:term` opens our pre-configured bash terminal, with a persistent `bash_history` 
+and some autocompletion, etc.
 
 ## Quick Start
-Clone or copy the `vim-rc` repository to your machine.
+Clone or copy the `dotfiles` repository to your machine.
 
-Ensure you have Docker desktop installed.
-
-Place your `.vimrc` and `.vim` folder in vim-configs. You can also checkout the 
-git repo [here]()
-
-Build the Docker image:
+Ensure you have Docker desktop installed. Build the Docker image:
 
 ```bash
-cd vim-test
-docker compose build vim
+cd dev-env-setup
+HOST_MYAPP_DIR=/Users/rohailtaimour/home/1_Projects/go-tutorial docker compose build vim
 ```
-This will use the local Dockerfile to create a custom Vim image.
-
-Run the containerized Vim, overriding the `HOST_MYAPP_DIR` environment variable 
-to point to the directory you want to edit. For example:
+Please note that we use a `.env` to point to the config directory 
+`HOST_VIM_CONFIG_DIR` but pass the `HOST_MYAPP_DIR` dynamically on the command 
+line.
 
 ```bash
-HOST_MYAPP_DIR=/Users/rohailtaimour/home/1_Projects/go-tutorial \
-docker compose run --rm vim
-```
-HOST_MYAPP_DIR is used in docker-compose.yml to mount that local folder into 
-`/root/workspace` (or another path).
-Your Vim configs are also mounted so the container sees .vimrc and .vim/ 
-exactly as on your host.
-The container automatically CDs to /root/workspace and launches Vim.
-
-4. Example .vimrc and .vim Folder
-Inside vim-configs, you might organize your config like this:
-
-```bash
-vim-configs
-├── .vimrc
-└── .vim
-    └── config
-        ├── plugins
-        │   ├── init.vim
-        │   ├── airline.vim
-        │   ├── fern.vim
-        │   └── ...
-        ├── settings.vim
-        ├── keymaps.vim
-        ├── ui.vim
-        └── ...
+HOST_MYAPP_DIR=/Users/rohailtaimour/home/1_Projects/go-tutorial docker compose run --rm vim
 ```
 
-In your .vimrc, you can source these files, for example:
+`HOST_MYAPP_DIR` is the directory that vim will be launched inside, with a mount 
+to the location `/root/workspace`.
+Your Vim configs are also mounted so the container sees `.vimrc` and `.vim/` 
+as you'd prefer. For example, you could launch multiple instances with different 
+configs
 
-```bash
-" Load plugins
-source /root/.vim/config/plugins/init.vim
 
-" Load other config
-source /root/.vim/config/settings.vim
-source /root/.vim/config/keymaps.vim
-source /root/.vim/config/ui.vim
-...
-```
+## Known caveats
+
+Running vim inside a container presents challenges to access the host 
+clipboard and viceversa. The current vim settings only allow vim to have access 
+to the clipboard inside the container. To access the clipboard on the host, we'd
+need to setup some sort of sync of the clipboards. Of the different options 
+available to do this, using ssh to copy the clipboard between container and host 
+seems the most straightforward but hasn't been considered yet in detail. 
+
+The other option, is to rely on bracketed paste, which means that we can use the 
+standard ctrl/cmd+c/v since we're running vim inside a terminal emulator.
