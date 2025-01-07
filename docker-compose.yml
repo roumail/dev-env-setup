@@ -2,7 +2,7 @@ services:
   fancy_bash:
     build:
       context: .        
-      dockerfile: Dockerfile.bash
+      dockerfile: Dockerfile
       target: bash
     image: dev-env_bash:latest
     environment:
@@ -21,7 +21,7 @@ services:
   jupyter:
     build:
       context: .
-      dockerfile: Dockerfile.bash
+      dockerfile: Dockerfile
       target: jupyter
     image: dev-env_jupyter:latest
     ports:
@@ -39,9 +39,8 @@ services:
     image: dev-env_bash:latest
     build:
       context: .        
-      dockerfile: Dockerfile.vim
-    depends_on:
-      - fancy_bash
+      dockerfile: Dockerfile
+      target: vim
     working_dir: /root/workspace
     stdin_open: true
     tty: true

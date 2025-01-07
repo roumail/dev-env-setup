@@ -21,13 +21,12 @@ COPY nerd-fonts/ /usr/share/fonts
 # Rebuild font cache
 RUN fc-cache -fv
 
-# Install Starship prompt
 FROM base AS tools
 
+# Install starship
 RUN curl -fsSL https://starship.rs/install.sh | sh -s -- -y
 
 # Install uv
-
 RUN curl -LsSf https://astral.sh/uv/install.sh | env UV_UNMANAGED_INSTALL="/usr/local/bin" sh
 
 # Bash Stage: Default bash command
@@ -42,9 +41,26 @@ COPY --from=tools /usr/local/bin/starship /usr/local/bin/starship
 # Copy uv binaries and environment from tools stage
 COPY --from=tools /usr/local/bin/uv /usr/local/bin/uv
 
-# Set default working directory and command
 WORKDIR /root/workspace
 CMD ["/bin/bash"]
+
+# Vim Stage: Default command for Vim
+FROM bash AS vim
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    # For terminal support (xterm_clipboard feature)    
+    vim-gtk3 \  
+    # Clipboard integration
+    xclip && \  
+    rm -rf /var/lib/apt/lists/*
+
+# Install vim-plug for plugin management
+RUN curl -fLo /root/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+# Set the default working directory
+WORKDIR /root/workspace
+CMD ["vim"]
 
 # Install Python 3.11 and Jupyter using uv
 FROM bash AS jupyter
