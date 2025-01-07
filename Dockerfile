@@ -56,7 +56,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Install vim-plug for plugin management
 RUN curl -fLo /root/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-
+# TODO: Add vim -E to do plugin install at build time
 CMD ["vim"]
 
 # Install Python 3.11 and Jupyter using uv
