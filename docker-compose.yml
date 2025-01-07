@@ -3,12 +3,12 @@ services:
     build:
       context: .        
       dockerfile: Dockerfile.bash
+      target: bash
     image: dev-env_bash:latest
     environment:
       - HISTCONTROL=ignoredups:ignorespace
       - HISTSIZE=10000
       - HISTFILESIZE=20000
-    # container_name: dev-env_bash
     stdin_open: true
     tty: true
     working_dir: /root/workspace
@@ -18,6 +18,23 @@ services:
       - "${HOST_BASHRC_DIR}/starship.toml:/root/.config/starship.toml"
       - "./.bash_history:/root/.bash_history"
   
+  jupyter:
+    build:
+      context: .
+      dockerfile: Dockerfile.bash
+      target: jupyter
+    image: dev-env_jupyter:latest
+    ports:
+      - "8888:8888"
+    stdin_open: true
+    tty: true
+    working_dir: /root/workspace
+    volumes:
+      - "${HOST_MYAPP_DIR}:/root/workspace" 
+      - "${HOST_BASHRC_DIR}/.bashrc:/root/.bashrc"
+      - "${HOST_BASHRC_DIR}/starship.toml:/root/.config/starship.toml"
+      - "./.bash_history:/root/.bash_history"
+
   vim:
     image: dev-env_bash:latest
     build:

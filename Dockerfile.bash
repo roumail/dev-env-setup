@@ -42,8 +42,6 @@ COPY --from=tools /usr/local/bin/starship /usr/local/bin/starship
 # Copy uv binaries and environment from tools stage
 COPY --from=tools /usr/local/bin/uv /usr/local/bin/uv
 
-# ENV PATH="$HOME/.local/bin:$PATH"
-
 # Set default working directory and command
 WORKDIR /root/workspace
 CMD ["/bin/bash"]
@@ -51,13 +49,14 @@ CMD ["/bin/bash"]
 # Install Python 3.11 and Jupyter using uv
 FROM bash AS jupyter
 
-# Install Python 3.11
-RUN uv python install 3.11
-
-# Install Jupyter Notebook globally
-RUN uv exec pip install jupyter
-
 WORKDIR /root/workspace
+
+RUN uv python install 3.11 && \
+    uv venv .venv --python 3.11 && \
+    . .venv/bin/activate && \ 
+    uv pip install jupyter
+
+ENV PATH="/root/workspace/.venv/bin:$PATH"
 
 # Default command for Jupyter stage
 CMD ["jupyter", "notebook", "--allow-root", "--ip", "0.0.0.0", "--no-browser"]
