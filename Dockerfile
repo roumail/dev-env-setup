@@ -41,7 +41,6 @@ COPY --from=tools /usr/local/bin/starship /usr/local/bin/starship
 # Copy uv binaries and environment from tools stage
 COPY --from=tools /usr/local/bin/uv /usr/local/bin/uv
 
-WORKDIR /root/workspace
 CMD ["/bin/bash"]
 
 # Vim Stage: Default command for Vim
@@ -58,14 +57,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN curl -fLo /root/.vim/autoload/plug.vim --create-dirs \
     https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
-# Set the default working directory
-WORKDIR /root/workspace
 CMD ["vim"]
 
 # Install Python 3.11 and Jupyter using uv
 FROM bash AS jupyter
-
-WORKDIR /root/workspace
 
 RUN uv python install 3.11 && \
     uv venv .venv --python 3.11 && \
