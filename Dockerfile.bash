@@ -1,3 +1,4 @@
+# Base Stage: Install common packages
 FROM debian:latest AS base
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -9,6 +10,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
+ENV SHELL=/bin/bash
+
 # Font Installation Stage: Handle fonts in a separate stage
 FROM base AS fonts
 
@@ -18,14 +21,17 @@ COPY nerd-fonts/ /usr/share/fonts
 # Rebuild font cache
 RUN fc-cache -fv
 
-# Tools Stage: Install Starship prompt
+# Install Starship prompt
 FROM base AS tools
 
-# Install Starship prompt
 RUN curl -fsSL https://starship.rs/install.sh | sh -s -- -y
 
-# Final Stage: Build the runtime image
-FROM base
+# Install uv
+
+RUN curl -LsSf https://astral.sh/uv/install.sh | env UV_UNMANAGED_INSTALL="/usr/local/bin" sh
+
+# Bash Stage: Default bash command
+FROM base AS bash
 
 # Copy fonts from the previous stage
 COPY --from=fonts /usr/share/fonts /usr/share/fonts
@@ -33,6 +39,25 @@ COPY --from=fonts /usr/share/fonts /usr/share/fonts
 # Copy Starship binary from the tools stage
 COPY --from=tools /usr/local/bin/starship /usr/local/bin/starship
 
+# Copy uv binaries and environment from tools stage
+COPY --from=tools /usr/local/bin/uv /usr/local/bin/uv
+
+# ENV PATH="$HOME/.local/bin:$PATH"
+
 # Set default working directory and command
 WORKDIR /root/workspace
 CMD ["/bin/bash"]
+
+# Install Python 3.11 and Jupyter using uv
+FROM bash AS jupyter
+
+# Install Python 3.11
+RUN uv python install 3.11
+
+# Install Jupyter Notebook globally
+RUN uv exec pip install jupyter
+
+WORKDIR /root/workspace
+
+# Default command for Jupyter stage
+CMD ["jupyter", "notebook", "--allow-root", "--ip", "0.0.0.0", "--no-browser"]
