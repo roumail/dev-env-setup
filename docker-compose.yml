@@ -18,7 +18,8 @@ services:
     - "${HOST_BASHRC_DIR}/starship.toml:/root/.config/starship.toml"
     - ".bash_history:/root/.bash_history"
     - "${HOST_VIM_CONFIG_DIR}/.vimrc:/root/.vimrc"
-    - "${HOST_VIM_CONFIG_DIR}/.vim/config:/root/.vim/config"   
+    - "${HOST_VIM_CONFIG_DIR}/.vim/config:/root/.vim/config"
+    - "${HOST_MYAPP_DIR}:/root/workspace"
   
   jupyter:
     build:
