@@ -1,5 +1,6 @@
+ARG BASE_IMAGE=debian:latest
 # Base Stage: Install common packages
-FROM debian:latest AS base
+FROM ${BASE_IMAGE} AS base
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     bash-completion \

@@ -3,6 +3,8 @@ services:
     build:
       context: .        
       dockerfile: Dockerfile
+      args:
+        BASE_IMAGE: ${BASE_IMAGE}
       target: bash
     image: dev-env_bash:latest
     environment:
@@ -25,6 +27,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        BASE_IMAGE: ${BASE_IMAGE}  
       target: jupyter
     image: dev-env_jupyter:latest
     ports:
@@ -38,6 +42,8 @@ services:
     image: dev-env_bash:latest
     build:
       context: .        
+      args:
+        BASE_IMAGE: ${BASE_IMAGE}
       dockerfile: Dockerfile
       target: vim
     working_dir: /root/workspace
