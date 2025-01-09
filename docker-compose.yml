@@ -44,7 +44,7 @@ services:
       context: ..
       dockerfile: dev-env-setup/Dockerfile
       <<: *build-args
-      target: vim
+      target: vim_plugins
     working_dir: /root/workspace
     stdin_open: true
     tty: true
