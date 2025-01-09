@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=debian:latest
+ARG BASE_IMAGE=debian:slim
 # Base Stage: Install common packages
 FROM ${BASE_IMAGE} AS base
 
