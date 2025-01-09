@@ -2,64 +2,62 @@
 
 This project contains docker-compose files for dev tools like vim and bash. The 
 vim setup in particular is meant to allow opening any directory in a pre-configured
-Vim environment running inside a Docker container. This lets you:
+Vim environment running inside a Docker container. This project is meant to work 
+together with the [dotfiles](git@github.com:roumail/dotfiles.git) repo, 
+which contains the different configuration files. It's expected to be checked 
+out next to this project so we can use `..` to reference files inside that
+directory.
 
-* Mount custom Vim configs and plugins.
+The aim of the project is to support:
+* Vim configs and plugins.
 * Mount any project directory from your host machine.
 * Quickly bootstrap the same Vim environment on different machines (Windows, 
 macOS, etc.).
 * Experiment with config changes or even have multiple different containers 
 running under different configurations
 
-## TODO:
-
-* Update documentation 
-* vim-rc to have a better name
-
 ## Directory Structure
-Apart from this repository, you'd also need the `dotfiles` repository, as well 
-as the directory you want to load. 
+Apart from this repository, the `dotfiles` repository, normally we'd be loading 
+the directory we want to work on as well. This folder is specified using a
+`.env` file which expects two values
+`HOST_APP_DIR` and `BASE_IMAGE`. 
 
-The dotfile's repo is where the .vimrc and .vim/ config would live, but you 
-can also pass different config paths if you desire a different setup.
+The latter is used to allow us to add our dev dependencies on top of any 
+project dependencies defined in their own docker-compose file. 
 
-```bash
-dotfiles/vim-rc/
-├── .vim/
-│   └── config/
-│       ├── plugins/
-│       └── ...
-└── .vimrc
-```
+As a concrete example, if we wanted to host this repo inside a containerized 
+vim session, we'd use the following build command:
+`HOST_APP_DIR=$(pwd) docker-compose --env-file .env build vim`
 
-Within this repository, we have a base dockerfile containing bash niceties and 
-a setup for vim. The idea is for the `bash` setup to be integrated so that 
-`:term` opens our pre-configured bash terminal, with a persistent `bash_history` 
-and some autocompletion, etc.
+with the `.env` contents: `BASE_IMAGE=debian:latest`
 
 ## Quick Start
-Clone or copy the `dotfiles` repository to your machine.
+Clone or copy the `dotfiles` repository to your machine, `next` to this project.
 
-Ensure you have Docker desktop installed. Build the Docker image:
+Ensure you have Docker desktop installed. Let's assume we're interested in working 
+with a project checked out here: `/Users/rohailtaimour/home/1_Projects/go-tutorial` 
+which has a dependency on `go` version `1.2.4`.
 
-```bash
-cd dev-env-setup
-HOST_MYAPP_DIR=/Users/rohailtaimour/home/1_Projects/go-tutorial docker compose build vim
-```
-Please note that we use a `.env` to point to the config directory 
-`HOST_VIM_CONFIG_DIR` but pass the `HOST_MYAPP_DIR` dynamically on the command 
-line.
+The contents of the `.env` file in this case would be
 
 ```bash
-HOST_MYAPP_DIR=/Users/rohailtaimour/home/1_Projects/go-tutorial docker compose run --rm vim
+HOST_APP_DIR=/Users/rohailtaimour/home/1_Projects/go-tutorial
+BASE_IMAGE=golang:1.23.4
 ```
 
-`HOST_MYAPP_DIR` is the directory that vim will be launched inside, with a mount 
-to the location `/root/workspace`.
-Your Vim configs are also mounted so the container sees `.vimrc` and `.vim/` 
-as you'd prefer. For example, you could launch multiple instances with different 
-configs
+```bash
+cd /Users/rohailtaimour/home/1_Projects/go-tutorial
+docker-compose --env-file .env -f /path/to/dev-env-setup/docker-compose.yml build vim
+```
+This would ensure that we're able to have an environment, configured with `Go` 
+for our project. 
 
+```bash
+docker-compose --env-file .env -f /path/to/dev-env-setup/docker-compose.yml run --rm vim
+```
+
+The directory `HOST_APP_DIR` will point to the location `/root/workspace` in 
+the container. 
 
 ## Known caveats
 
