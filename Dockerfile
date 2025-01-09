@@ -31,18 +31,10 @@ RUN fc-cache -fv
 
 FROM base AS tools
 
-# Copy bashrc
-COPY dotfiles/bash-rc/.bashrc /root/.bashrc
-
-# Install starship
-RUN curl -fsSL https://starship.rs/install.sh | sh -s -- -y
-
-# Install uv
-RUN curl -LsSf https://astral.sh/uv/install.sh | env UV_UNMANAGED_INSTALL="/usr/local/bin" sh
-
-# Install vim-plug for plugin management
-RUN curl -fLo /root/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+RUN curl -fsSL https://starship.rs/install.sh | sh -s -- -y && \
+    curl -LsSf https://astral.sh/uv/install.sh | env UV_UNMANAGED_INSTALL="/usr/local/bin" sh && \
+    curl -fLo /root/.vim/autoload/plug.vim --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 # Bash Stage: Default bash command
 FROM base AS bash
@@ -61,7 +53,9 @@ COPY --from=tools /root/.vim/autoload /root/.vim/autoload
 
 # Copy starship configuration
 COPY dotfiles/bash-rc/starship.toml /root/.config/starship.toml
-COPY --from=tools /root/.bashrc /root/.bashrc
+
+# Copy bashrc
+COPY dotfiles/bash-rc/.bashrc /root/.bashrc
 
 CMD ["/bin/bash"]
 
