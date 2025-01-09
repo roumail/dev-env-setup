@@ -61,8 +61,7 @@ RUN curl -fLo /root/.vim/autoload/plug.vim --create-dirs \
 # Run vim-plug in headless mode to install plugins
 # vim -E: Enables "Ex mode," which is non-interactive.
 # </dev/null: Prevents Vim from waiting for input during the build.
-# || true: Ensures the build doesn't fail due to plugin installation errors.
-RUN vim -E -u /root/.vimrc +PlugInstall +qall </dev/null || true
+RUN vim -E -u /root/.vimrc +PlugInstall +qall </dev/null
 
 CMD ["vim"]
 
