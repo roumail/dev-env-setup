@@ -1,10 +1,6 @@
 x-volumes: &dotfiles_and_app_dir
-  - "${HOST_BASHRC_DIR}/.bashrc:/root/.bashrc"
-  - "${HOST_BASHRC_DIR}/starship.toml:/root/.config/starship.toml"
   - ".bash_history:/root/.bash_history"
-  - "${HOST_VIM_CONFIG_DIR}/.vimrc:/root/.vimrc"
-  - "${HOST_VIM_CONFIG_DIR}/.vim/config:/root/.vim/config"
-  - "${HOST_MYAPP_DIR}:/root/workspace"
+  - "${HOST_APP_DIR}:/root/workspace"
 
 x-build-args: &build-args
   args:
@@ -13,8 +9,8 @@ x-build-args: &build-args
 services:
   fancy_bash:
     build:
-      context: .        
-      dockerfile: Dockerfile
+      context: ..        
+      dockerfile: dev-env-setup/Dockerfile
       <<: *build-args
       target: bash
     image: dev-env_bash:latest
@@ -30,8 +26,8 @@ services:
   
   jupyter:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: ..
+      dockerfile: dev-env-setup/Dockerfile
       <<: *build-args
       target: jupyter
     image: dev-env_jupyter:latest
@@ -45,9 +41,9 @@ services:
   vim: 
     image: dev-env_bash:latest
     build:
-      context: .        
+      context: ..
+      dockerfile: dev-env-setup/Dockerfile
       <<: *build-args
-      dockerfile: Dockerfile
       target: vim
     working_dir: /root/workspace
     stdin_open: true
