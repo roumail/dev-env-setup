@@ -12,9 +12,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     tree \
     ca-certificates \
     # For terminal support (xterm_clipboard feature)    
-    vim-gtk3 \  
+    vim-nox \  
     # Clipboard integration
     xclip \  
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/* && \
     ln -s /usr/bin/batcat /usr/bin/bat
 
