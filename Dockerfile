@@ -90,7 +90,10 @@ COPY dotfiles/vim-rc/.vim/config /root/.vim/config
 # vim -E: Enables "Ex mode," which is non-interactive.
 # </dev/null: Prevents Vim from waiting for input during the build.
 # Ensure the container installs plugins into the host-mounted directory at runtime
-CMD vim -E -u /root/.vimrc +PlugInstall +qall </dev/null && /bin/bash
+CMD ["/bin/bash", "-c", "set -e; \
+    vim -E -u /root/.vim/config/plugins/init.vim +PlugInstall +qall </dev/null || \
+    (echo 'Vim plugin installation failed!' >&2); \
+    exec /bin/bash"]
 
 # Install Python 3.11 and Jupyter using uv
 FROM vim_plugins AS jupyter
