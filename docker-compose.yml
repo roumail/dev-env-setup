@@ -6,9 +6,6 @@ x-build-args: &build-args
   args:
     BASE_IMAGE: ${BASE_IMAGE}
 
-x-image-name: &image_name
-  name: ${DEV_IMAGE_NAME}
-
 services:
   fancy_bash:
     build:
@@ -16,7 +13,7 @@ services:
       dockerfile: dev-env-setup/Dockerfile
       <<: *build-args
       target: bash
-    image: *image_name.name
+    image: ${DEV_IMAGE_NAME}
     environment:
       - HISTCONTROL=ignoredups:ignorespace
       - HISTSIZE=10000
@@ -33,7 +30,7 @@ services:
       dockerfile: dev-env-setup/Dockerfile
       <<: *build-args
       target: jupyter
-    image: *image_name.name
+    image: ${DEV_IMAGE_NAME}
     ports:
       - "8888:8888"
     stdin_open: true
@@ -42,7 +39,7 @@ services:
     volumes: *dotfiles_and_app_dir 
 
   vim: 
-    image: *image_name.name
+    image: ${DEV_IMAGE_NAME}
     build:
       context: ..
       dockerfile: dev-env-setup/Dockerfile
