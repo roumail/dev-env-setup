@@ -1,5 +1,6 @@
 x-volumes: &dotfiles_and_app_dir
-  - ".bash_history:/root/.bash_history"
+  # It's more complicated than this... 
+  # - "${HOST_APP_DIR}/.bash_history:/root/.bash_history"
   - "${HOST_APP_DIR}:/root/workspace"
 
 x-build-args: &build-args
