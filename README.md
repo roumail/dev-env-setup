@@ -14,6 +14,7 @@ directory.
 - Directory Mounting: Mount any project directory from your host machine into the container.
 - Cross-Platform Bootstrap: Quickly set up the same Vim environment across different machines (Windows, macOS, etc.).
 - Config Experimentation: Easily experiment with configuration changes or run multiple containers with different configurations.
+- Host-Based Plugin Persistence: Store Vim plugins on the host machine, reducing image size and ensuring persistence across container rebuilds.
 
 ## Directory Structure
 
@@ -23,6 +24,7 @@ Apart from this repository and the dotfiles repository, you typically load the d
 - BASE_IMAGE: The base Docker image that includes your project dependencies.
 - DEV_IMAGE_NAME: A descriptive name for your development environment image (e.g.
   , vim_env_go_tutorial).
+- PLUGINS_DIR: A directory to hold plugins installed in container
 
 ```bash
 /path/to/
@@ -39,8 +41,9 @@ vim session, we'd use the following build command:
 with the `.env`
 
 ```bash
-BASE_IMAGE=debian:slim
-DEV_IMAGE_NAME=dev_env_test:latest
+BASE_IMAGE=debian:stable-slim
+DEV_IMAGE_NAME=dev_env_test
+PLUGINS_DIR=~/vim_plugins/
 ```
 
 ## Quick Start
@@ -57,6 +60,7 @@ The contents of the `.env` file in this case would be
 HOST_APP_DIR=/path/to/go-tutorial
 BASE_IMAGE=golang:1.23.4
 DEV_IMAGE_NAME=go_tutorial
+PLUGINS_DIR=~/vim_plugins/
 ```
 
 ```bash
@@ -72,7 +76,9 @@ docker-compose --env-file .env -f /path/to/dev-env-setup/docker-compose.yml run 
 ```
 
 The directory `HOST_APP_DIR` will point to the location `/root/workspace` in
-the container and the built image will be name `DEV_IMAGE_NAME`.
+the container and the built image will be name `DEV_IMAGE_NAME`. At this point, 
+if you have an empty `$PLUGINS_DIR` it will be populated at runtime with the 
+result of installing the plugins.
 
 ## Known caveats
 

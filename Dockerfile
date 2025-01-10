@@ -89,9 +89,8 @@ COPY dotfiles/vim-rc/.vim/config /root/.vim/config
 # Run vim-plug in headless mode to install plugins
 # vim -E: Enables "Ex mode," which is non-interactive.
 # </dev/null: Prevents Vim from waiting for input during the build.
-RUN vim -E -u /root/.vimrc +PlugInstall +qall </dev/null
-
-CMD ["/bin/bash"]
+# Ensure the container installs plugins into the host-mounted directory at runtime
+CMD vim -E -u /root/.vimrc +PlugInstall +qall </dev/null && /bin/bash
 
 # Install Python 3.11 and Jupyter using uv
 FROM bash AS jupyter
