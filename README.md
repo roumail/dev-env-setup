@@ -1,31 +1,38 @@
 # Dev env setup
 
-This project contains docker-compose files for dev tools like vim and bash. The 
-vim setup in particular is meant to allow opening any directory in a pre-configured
-Vim environment running inside a Docker container. This project is meant to work 
-together with the [dotfiles](git@github.com:roumail/dotfiles.git) repo, 
-which contains the different configuration files. It's expected to be checked 
-out next to this project so we can use `..` to reference files inside that
+This project contains docker-compose files for dev tools like vim and bash. The
+Vim setup, in particular, allows you to open any directory in a pre-configured
+Vim environment running inside a Docker container. This project is designed to
+work alongside the [dotfiles](git@github.com:roumail/dotfiles.git) repo,
+which contains various configuration files. It's expected to be checked
+out next to this project so we can use `..` to reference files within that
 directory.
 
-The aim of the project is to support:
-* Vim configs and plugins.
-* Mount any project directory from your host machine.
-* Quickly bootstrap the same Vim environment on different machines (Windows, 
-macOS, etc.).
-* Experiment with config changes or even have multiple different containers 
-running under different configurations
+## Features
+
+- Vim Configs and Plugins: Pre-configured Vim environment with essential plugins.
+- Directory Mounting: Mount any project directory from your host machine into the container.
+- Cross-Platform Bootstrap: Quickly set up the same Vim environment across different machines (Windows, macOS, etc.).
+- Config Experimentation: Easily experiment with configuration changes or run multiple containers with different configurations.
 
 ## Directory Structure
-Apart from this repository, the `dotfiles` repository, normally we'd be loading 
-the directory we want to work on as well. This folder is specified using a
-`.env` file which expects three values
-`HOST_APP_DIR`, `BASE_IMAGE` and `DEV_IMAGE_NAME`. 
 
-The `BASE_IMAGE` is used to allow us to add our dev dependencies on top of any 
-project dependencies defined in their own docker-compose file. 
+Apart from this repository and the dotfiles repository, you typically load the directory you want to work on as well. This folder is specified using a .env file, which expects the following values:
 
-As a concrete example, if we wanted to host this repo inside a containerized 
+- HOST_APP_DIR: The path to the project directory on your host machine.
+- BASE_IMAGE: The base Docker image that includes your project dependencies.
+- DEV_IMAGE_NAME: A descriptive name for your development environment image (e.g.
+  , vim_env_go_tutorial).
+
+```bash
+/path/to/
+├── dev-env-setup/         # This repository
+├── dotfiles/              # Your dotfiles repository
+└── your-project/          # The project you are working on
+
+```
+
+As a concrete example, if we wanted to host this repo inside a containerized
 vim session, we'd use the following build command:
 `HOST_APP_DIR=$(pwd) docker-compose --env-file .env build vim`
 
@@ -37,10 +44,11 @@ DEV_IMAGE_NAME=dev_env_test:latest
 ```
 
 ## Quick Start
+
 Clone or copy the `dotfiles` repository to your machine, `next` to this project.
 
-Ensure you have Docker desktop installed. Let's assume we're interested in working 
-with a project checked out here: `/Users/rohailtaimour/home/1_Projects/go-tutorial` 
+Ensure you have Docker desktop installed. Let's assume we're interested in working
+with a project checked out here: `/Users/rohailtaimour/home/1_Projects/go-tutorial`
 which has a dependency on `go` version `1.2.4`.
 
 The contents of the `.env` file in this case would be
@@ -55,24 +63,28 @@ DEV_IMAGE_NAME=go_tutorial
 cd /path/to/go-tutorial
 docker-compose --env-file .env -f /path/to/dev-env-setup/docker-compose.yml build vim
 ```
-This would ensure that we're able to have an environment, configured with `Go` 
-for our project. 
+
+This would ensure that we're able to have an environment, configured with `Go`
+for our project.
 
 ```bash
 docker-compose --env-file .env -f /path/to/dev-env-setup/docker-compose.yml run --rm vim
 ```
 
-The directory `HOST_APP_DIR` will point to the location `/root/workspace` in 
-the container and the built image will be name `DEV_IMAGE_NAME`. 
+The directory `HOST_APP_DIR` will point to the location `/root/workspace` in
+the container and the built image will be name `DEV_IMAGE_NAME`.
 
 ## Known caveats
 
-Running vim inside a container presents challenges to access the host 
-clipboard and viceversa. The current vim settings only allow vim to have access 
-to the clipboard inside the container. To access the clipboard on the host, we'd
-need to setup some sort of sync of the clipboards. Of the different options 
-available to do this, using ssh to copy the clipboard between container and host 
-seems the most straightforward but hasn't been considered yet in detail. 
+### Clipboard Sync
 
-The other option, is to rely on bracketed paste, which means that we can use the 
-standard ctrl/cmd+c/v since we're running vim inside a terminal emulator.
+Running Vim inside a container presents challenges for clipboard access between the host and the container. Currently, Vim can only access the container's clipboard. To enable clipboard sharing between the host and the container, consider the following options:
+
+1. SSH with X11 Forwarding:
+
+- Install xclip or xsel inside the container.
+- Use ssh -X to enable X11 forwarding for clipboard commands.
+- Manually sync the clipboard or automate the process with scripts.
+
+2. Bracketed Paste: Use terminal emulators that support bracketed paste (e.g., iTerm2, Alacritty) to allow standard Ctrl/Cmd+C/V operations.
+3. Clipboard Sharing Tools: Explore tools like clipboardctl or xsel that facilitate clipboard sharing between the host and the container.
