@@ -19,17 +19,22 @@ running under different configurations
 ## Directory Structure
 Apart from this repository, the `dotfiles` repository, normally we'd be loading 
 the directory we want to work on as well. This folder is specified using a
-`.env` file which expects two values
-`HOST_APP_DIR` and `BASE_IMAGE`. 
+`.env` file which expects three values
+`HOST_APP_DIR`, `BASE_IMAGE` and `DEV_IMAGE_NAME`. 
 
-The latter is used to allow us to add our dev dependencies on top of any 
+The `BASE_IMAGE` is used to allow us to add our dev dependencies on top of any 
 project dependencies defined in their own docker-compose file. 
 
 As a concrete example, if we wanted to host this repo inside a containerized 
 vim session, we'd use the following build command:
 `HOST_APP_DIR=$(pwd) docker-compose --env-file .env build vim`
 
-with the `.env` contents: `BASE_IMAGE=debian:latest`
+with the `.env`
+
+```bash
+BASE_IMAGE=debian:slim
+DEV_IMAGE_NAME=dev_env_test:latest
+```
 
 ## Quick Start
 Clone or copy the `dotfiles` repository to your machine, `next` to this project.
@@ -41,12 +46,13 @@ which has a dependency on `go` version `1.2.4`.
 The contents of the `.env` file in this case would be
 
 ```bash
-HOST_APP_DIR=/Users/rohailtaimour/home/1_Projects/go-tutorial
+HOST_APP_DIR=/path/to/go-tutorial
 BASE_IMAGE=golang:1.23.4
+DEV_IMAGE_NAME=go_tutorial
 ```
 
 ```bash
-cd /Users/rohailtaimour/home/1_Projects/go-tutorial
+cd /path/to/go-tutorial
 docker-compose --env-file .env -f /path/to/dev-env-setup/docker-compose.yml build vim
 ```
 This would ensure that we're able to have an environment, configured with `Go` 
@@ -57,7 +63,7 @@ docker-compose --env-file .env -f /path/to/dev-env-setup/docker-compose.yml run 
 ```
 
 The directory `HOST_APP_DIR` will point to the location `/root/workspace` in 
-the container. 
+the container and the built image will be name `DEV_IMAGE_NAME`. 
 
 ## Known caveats
 
