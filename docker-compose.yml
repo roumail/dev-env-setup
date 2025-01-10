@@ -5,6 +5,7 @@ x-volumes: &dotfiles_and_app_dir
 x-build-args: &build-args
   args:
     BASE_IMAGE: ${BASE_IMAGE}
+    DEV_IMAGE_NAME: ${DEV_IMAGE_NAME}
 
 services:
   fancy_bash:
@@ -12,8 +13,12 @@ services:
       context: ..        
       dockerfile: dev-env-setup/Dockerfile
       <<: *build-args
+      cache_from:
+        - rohailt/${DEV_IMAGE_NAME}-bash
+      cache_to:
+        - type=registry,ref=rohailt/${DEV_IMAGE_NAME}-bash
       target: bash
-    image: ${DEV_IMAGE_NAME}
+    image: rohailt/${DEV_IMAGE_NAME}-bash
     environment:
       - HISTCONTROL=ignoredups:ignorespace
       - HISTSIZE=10000
@@ -28,9 +33,13 @@ services:
     build:
       context: ..
       dockerfile: dev-env-setup/Dockerfile
+      cache_from:
+        - rohailt/${DEV_IMAGE_NAME}-jupyter
+      cache_to:
+        - type=registry,ref=rohailt/${DEV_IMAGE_NAME}-jupyter
       <<: *build-args
       target: jupyter
-    image: ${DEV_IMAGE_NAME}
+    image: rohailt/${DEV_IMAGE_NAME}-jupyter
     ports:
       - "8888:8888"
     stdin_open: true
@@ -39,12 +48,16 @@ services:
     volumes: *dotfiles_and_app_dir 
 
   vim: 
-    image: ${DEV_IMAGE_NAME}
     build:
       context: ..
       dockerfile: dev-env-setup/Dockerfile
       <<: *build-args
+      cache_from:
+        - rohailt/${DEV_IMAGE_NAME}-vim_plugins
+      cache_to:
+        - type=registry,ref=rohailt/${DEV_IMAGE_NAME}-vim_plugins
       target: vim_plugins
+    image: rohailt/${DEV_IMAGE_NAME}-vim_plugins
     working_dir: /root/workspace
     stdin_open: true
     tty: true
