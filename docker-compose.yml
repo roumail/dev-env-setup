@@ -9,26 +9,6 @@ x-build-args: &build-args
     DEV_IMAGE_NAME: ${DEV_IMAGE_NAME}
 
 services:
-  fancy_bash:
-    build:
-      context: ..        
-      dockerfile: dev-env-setup/Dockerfile
-      <<: *build-args
-      cache_from:
-        - rohailt/${DEV_IMAGE_NAME}-bash
-      cache_to:
-        - type=registry,ref=rohailt/${DEV_IMAGE_NAME}-bash
-      target: bash
-    image: rohailt/${DEV_IMAGE_NAME}-bash
-    environment:
-      - HISTCONTROL=ignoredups:ignorespace
-      - HISTSIZE=10000
-      - HISTFILESIZE=20000
-    stdin_open: true
-    tty: true
-    working_dir: /root/workspace
-    command: ["/bin/bash"]
-    volumes: *dotfiles_and_app_dir
   
   jupyter:
     build:
@@ -62,6 +42,4 @@ services:
     working_dir: /root/workspace
     stdin_open: true
     tty: true
-    volumes:
-      - "${PLUGINS_DIR}:/root/.vim/plugged"
-      - "${HOST_APP_DIR}:/root/workspace"
+    volumes: *dotfiles_and_app_dir
