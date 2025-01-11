@@ -93,7 +93,7 @@ COPY dotfiles/vim-rc/.vim/config /root/.vim/config
 CMD vim -E -u /root/.vimrc +PlugInstall +qall </dev/null && /bin/bash
 
 # Install Python 3.11 and Jupyter using uv
-FROM bash AS jupyter
+FROM vim_plugins AS jupyter
 LABEL stage="jupyter"
 LABEL org.opencontainers.image.description="Stage for configuring a python installation with a jupyter notebook interface."
 
