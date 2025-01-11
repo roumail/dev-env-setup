@@ -82,9 +82,8 @@ FROM bash AS vim_plugins
 LABEL stage="vim_plugins"
 LABEL org.opencontainers.image.description="Stage for configuring Vim with plugins."
 
-# Copy vim configuration
-COPY dotfiles/vim-rc/.vimrc /root/.vimrc 
-COPY dotfiles/vim-rc/.vim/config /root/.vim/config 
+# Copy vim-plug and plugin initialization file
+COPY dotfiles/vim-rc/.vim/config/plugins/init.vim  /root/.vim/config/plugins/init.vim
 
 # Run vim-plug in headless mode to install plugins
 # vim -E: Enables "Ex mode," which is non-interactive.

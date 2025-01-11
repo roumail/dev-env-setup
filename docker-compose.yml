@@ -1,7 +1,9 @@
 x-volumes: &dotfiles_and_app_dir
-  # It's more complicated than this... 
-  # - "${HOST_APP_DIR}/.bash_history:/root/.bash_history"
+  - "${VIM_RC_FPATH}:/root/.vimrc" 
+  - "${VIM_CONFIG_DIR}:/root/.vim/config/"
+  - "${PLUGINS_DIR}:/root/.vim/plugged"
   - "${HOST_APP_DIR}:/root/workspace"
+  # - "${BASH_HISTORY_FPATH}:/root/.bash_history"
 
 x-build-args: &build-args
   args:
