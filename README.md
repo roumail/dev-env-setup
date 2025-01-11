@@ -22,9 +22,14 @@ Apart from this repository and the dotfiles repository, you typically load the d
 
 - HOST_APP_DIR: The path to the project directory on your host machine.
 - BASE_IMAGE: The base Docker image that includes your project dependencies.
-- DEV_IMAGE_NAME: A descriptive name for your development environment image (e.g.
-  , vim_env_go_tutorial).
-- PLUGINS_DIR: A directory to hold plugins installed in container
+- DEV_IMAGE_NAME: A descriptive name for your development environment image (e.g., vim_env_go_tutorial).
+- PLUGINS_DIR: A directory to hold plugins installed in the container.
+- BASH_HISTORY_FPATH: Path to bash history file for the mounted directory. This
+  follows the convention of ~/bash_histories/${DEV_IMAGE_NAME}-bash_history.
+- DOTFILES_DIR: The path to your dotfiles repository on the host machine.
+- VIM_DOTFILES_DIR: Directory within the dotfiles repository containing Vim configuration files.
+- VIM_RC_FPATH: Path to the .vimrc file within the Vim dotfiles directory.
+- VIM_CONFIG_DIR: Path to the .vim/config directory within the Vim dotfiles directory.
 
 ```bash
 /path/to/
@@ -33,6 +38,8 @@ Apart from this repository and the dotfiles repository, you typically load the d
 └── your-project/          # The project you are working on
 
 ```
+>NOTE: Do not depend on `~` in your `.env` declarations as those don't always 
+expand appropriately
 
 As a concrete example, if we wanted to host this repo inside a containerized
 vim session, we'd use the following build command:
@@ -44,6 +51,11 @@ with the `.env`
 BASE_IMAGE=debian:stable-slim
 DEV_IMAGE_NAME=dev_env_test
 PLUGINS_DIR=~/vim_plugins/
+DOTFILES_DIR=/path/to/dotfiles
+VIM_DOTFILES_DIR=${DOTFILES_DIR}/vim-rc
+VIM_RC_FPATH=${VIM_DOTFILES_DIR}/.vimrc
+VIM_CONFIG_DIR=${VIM_DOTFILES_DIR}/.vim/config
+BASH_HISTORY_FPATH=/path/to/bash_histories/${DEV_IMAGE_NAME}-bash
 ```
 
 ## Quick Start
@@ -60,9 +72,14 @@ The contents of the `.env` file in this case would be
 HOST_APP_DIR=/path/to/go-tutorial
 BASE_IMAGE=golang:1.23.4
 DEV_IMAGE_NAME=go_tutorial
-PLUGINS_DIR=~/vim_plugins/
+PLUGINS_DIR=/Users/rohailtaimour/vim_plugins/
+DOTFILES_DIR=/path/to/dotfiles
+VIM_DOTFILES_DIR=${DOTFILES_DIR}/vim-rc
+VIM_RC_FPATH=${VIM_DOTFILES_DIR}/.vimrc
+VIM_CONFIG_DIR=${VIM_DOTFILES_DIR}/.vim/config
+BASH_HISTORY_FPATH=/Users/rohailtaimour/bash_histories/${DEV_IMAGE_NAME}-bash_history
 ```
-
+Then you can go to the project directory and run the build command
 ```bash
 cd /path/to/go-tutorial
 docker-compose --env-file .env -f /path/to/dev-env-setup/docker-compose.yml build vim
@@ -76,8 +93,8 @@ docker-compose --env-file .env -f /path/to/dev-env-setup/docker-compose.yml run 
 ```
 
 The directory `HOST_APP_DIR` will point to the location `/root/workspace` in
-the container and the built image will be name `DEV_IMAGE_NAME`. At this point, 
-if you have an empty `$PLUGINS_DIR` it will be populated at runtime with the 
+the container and the built image will be name `DEV_IMAGE_NAME`. At this point,
+if you have an empty `$PLUGINS_DIR` it will be populated at runtime with the
 result of installing the plugins.
 
 ## Known caveats
@@ -94,3 +111,9 @@ Running Vim inside a container presents challenges for clipboard access between 
 
 2. Bracketed Paste: Use terminal emulators that support bracketed paste (e.g., iTerm2, Alacritty) to allow standard Ctrl/Cmd+C/V operations.
 3. Clipboard Sharing Tools: Explore tools like clipboardctl or xsel that facilitate clipboard sharing between the host and the container.
+
+### Bash history mounting
+
+Before launching the container, ensure the bash history file exists on your host. Without a pre-existing file, the volume mount - "${BASH_HISTORY_FPATH}:/root/.bash_history" may create a directory instead of a file. The cause of this behavior remains unclear. For more details, see this [discussion](https://stackoverflow.com/questions/34134343/single-file-volume-mounted-as-directory-in-docker).
+
+An additional issue was observed where history -w inside the container failed to write to the mounted file. Deleting and recreating the file on the host resolved the problem. To mitigate this, the Docker Compose configuration includes a touch command to ensure the file is created and writable before container startup.
