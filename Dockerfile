@@ -105,4 +105,4 @@ RUN uv python install 3.11 && \
 ENV PATH="/root/workspace/.venv/bin:$PATH"
 
 # Default command for Jupyter stage
-CMD ["jupyter", "notebook", "--allow-root", "--ip", "0.0.0.0", "--no-browser"]
+CMD ["jupyter", "notebook", "--allow-root", "--ip", "0.0.0.0", "--no-browser", "&"]
