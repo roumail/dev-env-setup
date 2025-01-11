@@ -72,8 +72,10 @@ COPY --from=tools /root/.vim/autoload /root/.vim/autoload
 # Copy starship configuration
 COPY dotfiles/bash-rc/starship.toml /root/.config/starship.toml
 
-# Copy bashrc
+# Copy bashrc and other dotfiles
 COPY dotfiles/bash-rc/.bashrc /root/.bashrc
+COPY dotfiles/bash-rc/.editorconfig /root/.editorconfig
+COPY dotfiles/bash-rc/.terminfo /root/.terminfo
 
 CMD ["/bin/bash"]
 
