@@ -13,9 +13,6 @@ if [ -f "$INIT_FILE" ]; then
         echo "Vim plugin installation failed!" >&2
         exit 1
     }
-    # Remove the copied init file to avoid conflict with the mounted volume
-    echo "Removing $INIT_FILE to avoid conflicts with volume mount..."
-    rm -f "$INIT_FILE"
 else
     echo "Vim initialization file not found at $INIT_FILE. Skipping plugin installation."
 fi
