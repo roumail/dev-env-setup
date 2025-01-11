@@ -84,15 +84,12 @@ LABEL org.opencontainers.image.description="Stage for configuring Vim with plugi
 
 # Copy vim-plug and plugin initialization file
 COPY dotfiles/vim-rc/.vim/config/plugins/init.vim  /root/.vim/config/plugins/init.vim
+COPY dev-env-setup/entrypoint.sh /usr/local/bin/entrypoint.sh
 
-# Run vim-plug in headless mode to install plugins
-# vim -E: Enables "Ex mode," which is non-interactive.
-# </dev/null: Prevents Vim from waiting for input during the build.
-# Ensure the container installs plugins into the host-mounted directory at runtime
-CMD ["/bin/bash", "-c", "set -e; \
-    vim -E -u /root/.vim/config/plugins/init.vim +PlugInstall +qall </dev/null || \
-    (echo 'Vim plugin installation failed!' >&2); \
-    exec /bin/bash"]
+# Make the script executable
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+CMD ["/usr/local/bin/entrypoint.sh"]
 
 # Install Python 3.11 and Jupyter using uv
 FROM vim_plugins AS jupyter
