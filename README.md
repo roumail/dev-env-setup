@@ -111,9 +111,3 @@ Running Vim inside a container presents challenges for clipboard access between 
 
 2. Bracketed Paste: Use terminal emulators that support bracketed paste (e.g., iTerm2, Alacritty) to allow standard Ctrl/Cmd+C/V operations.
 3. Clipboard Sharing Tools: Explore tools like clipboardctl or xsel that facilitate clipboard sharing between the host and the container.
-
-### Bash history mounting
-
-Before launching the container, ensure the bash history file exists on your host. Without a pre-existing file, the volume mount - "${BASH_HISTORY_FPATH}:/root/.bash_history" may create a directory instead of a file. The cause of this behavior remains unclear. For more details, see this [discussion](https://stackoverflow.com/questions/34134343/single-file-volume-mounted-as-directory-in-docker).
-
-An additional issue was observed where history -w inside the container failed to write to the mounted file. Deleting and recreating the file on the host resolved the problem. To mitigate this, the Docker Compose configuration includes a touch command to ensure the file is created and writable before container startup.
