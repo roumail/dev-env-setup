@@ -26,16 +26,19 @@ Apart from this repository and the dotfiles repository, you typically load the d
 - PLUGINS_DIR: A directory to hold plugins installed in the container.
 - BASH_HISTORY_FPATH: Path to bash history file for the mounted directory. This
   follows the convention of ~/bash_histories/${DEV_IMAGE_NAME}-bash_history.
-- DOTFILES_DIR: The path to your dotfiles repository on the host machine.
+- DOTFILES_BASENAME: This is the relative path to the directory containing a 
+specific git checkout of your dotfiles repository.
+- DOTFILES_DIR: The path to your dotfiles repository on the host machine. This 
+can be a plain checkout or a git worktree. 
 - VIM_DOTFILES_DIR: Directory within the dotfiles repository containing Vim configuration files.
 - VIM_RC_FPATH: Path to the .vimrc file within the Vim dotfiles directory.
 - VIM_CONFIG_DIR: Path to the .vim/config directory within the Vim dotfiles directory.
 
 ```bash
 /path/to/
-├── dev-env-setup/         # This repository
-├── dotfiles/              # Your dotfiles repository
-└── your-project/          # The project you are working on
+├── dev-env-setup/           # This repository
+├── dotfileswt/              # Your dotfiles repository
+└── your-project/            # The project you are working on
 
 ```
 >NOTE: Do not depend on `~` in your `.env` declarations as those don't always 
@@ -51,7 +54,11 @@ with the `.env`
 BASE_IMAGE=debian:stable-slim
 DEV_IMAGE_NAME=dev_env_test
 PLUGINS_DIR=~/vim_plugins/
-DOTFILES_DIR=/path/to/dotfiles
+# Define the basename for the dotfiles directory (relative path from root)
+DOTFILES_BASENAME=dotfileswt/main
+# DOTFILES_BASENAME=dotfileswt/golang-lsp
+# DOTFILES_BASENAME=dotfiles # checkouted out without worktree
+DOTFILES_DIR=/path/to/${DOTFILES_BASENAME}
 VIM_DOTFILES_DIR=${DOTFILES_DIR}/vim-rc
 VIM_RC_FPATH=${VIM_DOTFILES_DIR}/.vimrc
 VIM_CONFIG_DIR=${VIM_DOTFILES_DIR}/.vim/config
@@ -73,7 +80,9 @@ HOST_APP_DIR=/path/to/go-tutorial
 BASE_IMAGE=golang:1.23.4
 DEV_IMAGE_NAME=go_tutorial
 PLUGINS_DIR=/Users/rohailtaimour/vim_plugins/
-DOTFILES_DIR=/path/to/dotfiles
+# Define the basename for the dotfiles directory (relative path from root)
+DOTFILES_BASENAME=dotfileswt/golang-lsp
+DOTFILES_DIR=/path/to/${DOTFILES_BASENAME}
 VIM_DOTFILES_DIR=${DOTFILES_DIR}/vim-rc
 VIM_RC_FPATH=${VIM_DOTFILES_DIR}/.vimrc
 VIM_CONFIG_DIR=${VIM_DOTFILES_DIR}/.vim/config
