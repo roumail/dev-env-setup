@@ -85,7 +85,7 @@ LABEL stage="vim_plugins"
 LABEL org.opencontainers.image.description="Stage for configuring Vim with plugins."
 
 # Copy vim-plug and plugin initialization file
-COPY dotfiles/vim-rc/.vim/config/plugins/init.vim  /root/.vim/config/plugins/init.vim
+COPY dotfiles/vim-rc/custom/plug.vim  /root/.vim/custom/plug.vim
 COPY dev-env-setup/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 # Make the script executable

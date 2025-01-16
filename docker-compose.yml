@@ -1,6 +1,6 @@
 x-volumes: &dotfiles_and_app_dir
   - "${VIM_RC_FPATH}:/root/.vimrc" 
-  - "${VIM_CONFIG_DIR}:/root/.vim/config/"
+  - "${VIM_CONFIG_DIR}:/root/.vim/custom/"
   - "${PLUGINS_DIR}:/root/.vim/plugged"
   - "${HOST_APP_DIR}:/root/workspace"
   - "${BASH_HISTORY_FPATH}:/root/.bash_history"
