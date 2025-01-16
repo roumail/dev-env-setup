@@ -4,6 +4,7 @@ FROM ${BASE_IMAGE} AS base
 # https://stackoverflow.com/questions/53681522/share-variable-in-multi-stage-dockerfile-arg-before-from-not-substituted
 ARG BASE_IMAGE
 ARG DEV_IMAGE_NAME=dev-env
+ARG DOTFILES_BASENAME
 LABEL version="1.0.0"
 LABEL org.opencontainers.image.authors="rohailt"
 LABEL org.opencontainers.image.source="https://github.com/rohailt/dev-env-setup"
@@ -55,6 +56,7 @@ RUN curl -fsSL https://starship.rs/install.sh | sh -s -- -y && \
 # Bash Stage: Default bash command
 FROM base AS bash
 LABEL stage="bash"
+ARG DOTFILES_BASENAME
 LABEL org.opencontainers.image.description="Stage for configuring bash with tools."
 
 # Copy fonts from the previous stage
@@ -70,12 +72,12 @@ COPY --from=tools /usr/local/bin/uv /usr/local/bin/uv
 COPY --from=tools /root/.vim/autoload /root/.vim/autoload
 
 # Copy starship configuration
-COPY dotfiles/bash-rc/starship.toml /root/.config/starship.toml
+COPY ${DOTFILES_BASENAME}/bash-rc/starship.toml /root/.config/starship.toml
 
 # Copy bashrc and other dotfiles
-COPY dotfiles/bash-rc/.bashrc /root/.bashrc
-COPY dotfiles/bash-rc/.editorconfig /root/.editorconfig
-COPY dotfiles/bash-rc/.terminfo /root/.terminfo
+COPY ${DOTFILES_BASENAME}/bash-rc/.bashrc /root/.bashrc
+COPY ${DOTFILES_BASENAME}/bash-rc/.editorconfig /root/.editorconfig
+COPY ${DOTFILES_BASENAME}/bash-rc/.terminfo /root/.terminfo
 
 CMD ["/bin/bash"]
 
@@ -83,9 +85,9 @@ CMD ["/bin/bash"]
 FROM bash AS vim_plugins
 LABEL stage="vim_plugins"
 LABEL org.opencontainers.image.description="Stage for configuring Vim with plugins."
-
+ARG DOTFILES_BASENAME
 # Copy vim-plug and plugin initialization file
-COPY dotfiles/vim-rc/custom/plug.vim  /root/.vim/custom/plug.vim
+COPY ${DOTFILES_BASENAME}/vim-rc/custom/plug.vim  /root/.vim/custom/plug.vim
 COPY dev-env-setup/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 # Make the script executable

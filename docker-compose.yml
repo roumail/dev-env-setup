@@ -9,6 +9,7 @@ x-build-args: &build-args
   args:
     BASE_IMAGE: ${BASE_IMAGE}
     DEV_IMAGE_NAME: ${DEV_IMAGE_NAME}
+    DOTFILES_BASENAME: ${DOTFILES_BASENAME}
 
 services:
   
