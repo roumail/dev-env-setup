@@ -4,6 +4,9 @@ x-volumes: &dotfiles_and_app_dir
   - "${PLUGINS_DIR}:/root/.vim/plugged"
   - "${HOST_APP_DIR}:/root/workspace"
   - "${BASH_HISTORY_FPATH}:/root/.bash_history"
+  # If you define $XDG_DATA_HOME:
+  # $XDG_DATA_HOME/vim-lsp-settings/servers
+  # - "${LOCAL_DIR}:$HOME/.local/share/vim-lsp-settings/servers"
 
 x-build-args: &build-args
   args:

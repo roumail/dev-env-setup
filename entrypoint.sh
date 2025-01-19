@@ -11,6 +11,7 @@ if [ -f "$PLUGINS_FILE" ]; then
     # Ensure the container installs plugins into the host-mounted directory at runtime
     vim -E -u "$PLUGINS_FILE" +PlugInstall +qall </dev/null || {
         echo "Vim plugin installation failed!" >&2
+        # Commented out so we can at least launch the container
         # exit 1
     }
 else
