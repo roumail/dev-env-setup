@@ -93,11 +93,16 @@ LABEL org.opencontainers.image.description="Stage for configuring Vim with plugi
 ARG DOTFILES_BASENAME
 # Copy vim-plug and plugin initialization file
 COPY ${DOTFILES_BASENAME}/vim-rc/custom/plug.vim  /root/.vim/custom/plug.vim
+# Add coc-settings to ~/.vim directory
+COPY ${DOTFILES_BASENAME}/vim-rc/custom/coc-settings.json  /root/.vim/coc-settings.json
 COPY dev-env-setup/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 # Install Node.js, npm, and Pyright
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sh && \
     apt-get install -y nodejs && \
+    npm install -g dockerfile-language-server-nodejs && \
+    npm i -g bash-language-server && \
+    npm install -g @microsoft/compose-language-service && \
     npm install -g pyright && \
     rm -rf /var/lib/apt/lists/*
 
