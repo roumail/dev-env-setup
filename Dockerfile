@@ -49,9 +49,11 @@ FROM base AS tools
 LABEL stage="tools"
 
 RUN curl -fsSL https://starship.rs/install.sh | sh -s -- -y && \
+    curl -fsSL https://astral.sh/ruff/install.sh | sh && \
     curl -LsSf https://astral.sh/uv/install.sh | env UV_UNMANAGED_INSTALL="/usr/local/bin" sh && \
     curl -fLo /root/.vim/autoload/plug.vim --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim && \
+    rm -rf /var/lib/apt/lists/*
 
 # Bash Stage: Default bash command
 FROM base AS bash
@@ -67,6 +69,9 @@ COPY --from=tools /usr/local/bin/starship /usr/local/bin/starship
 
 # Copy uv binaries and environment from tools stage
 COPY --from=tools /usr/local/bin/uv /usr/local/bin/uv
+
+# Copy ruff binary from tools stage
+COPY --from=tools /root/.local/bin/ruff /usr/local/bin/ruff
 
 # Vim plug directories
 COPY --from=tools /root/.vim/autoload /root/.vim/autoload
@@ -89,6 +94,12 @@ ARG DOTFILES_BASENAME
 # Copy vim-plug and plugin initialization file
 COPY ${DOTFILES_BASENAME}/vim-rc/custom/plug.vim  /root/.vim/custom/plug.vim
 COPY dev-env-setup/entrypoint.sh /usr/local/bin/entrypoint.sh
+
+# Install Node.js, npm, and Pyright
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | sh && \
+    apt-get install -y nodejs && \
+    npm install -g pyright && \
+    rm -rf /var/lib/apt/lists/*
 
 # Make the script executable
 RUN chmod +x /usr/local/bin/entrypoint.sh
