@@ -19,6 +19,7 @@ LABEL org.opencontainers.image.created=$(date)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     git \
+    tar \
     bash \
     tmux \
     bat \
@@ -53,6 +54,19 @@ RUN curl -fsSL https://starship.rs/install.sh | sh -s -- -y && \
     curl -LsSf https://astral.sh/uv/install.sh | env UV_UNMANAGED_INSTALL="/usr/local/bin" sh && \
     curl -fLo /root/.vim/autoload/plug.vim --create-dirs \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim && \
+    arch=$(uname -m) && \
+    fzf_arch="" && \
+    if [ "$arch" = "x86_64" ]; then \
+        fzf_arch="amd64"; \
+    elif [ "$arch" = "aarch64" ]; then \
+        fzf_arch="arm64"; \
+    else \
+        echo "Unsupported architecture: $arch" && exit 1; \
+    fi && \
+    curl -fsSL "https://github.com/junegunn/fzf/releases/download/v0.58.0/fzf-0.58.0-linux_${fzf_arch}.tar.gz" -o /tmp/fzf.tar.gz && \
+    tar -xzf /tmp/fzf.tar.gz -C /usr/local/bin && \
+    chmod +x /usr/local/bin/fzf && \
+    rm /tmp/fzf.tar.gz && \
     rm -rf /var/lib/apt/lists/*
 
 # Bash Stage: Default bash command
@@ -73,6 +87,8 @@ COPY --from=tools /usr/local/bin/uv /usr/local/bin/uv
 # Copy ruff binary from tools stage
 COPY --from=tools /root/.local/bin/ruff /usr/local/bin/ruff
 
+# Copy fzf binary from tools stage
+COPY --from=tools /usr/local/bin/fzf /usr/local/bin/fzf
 # Vim plug directories
 COPY --from=tools /root/.vim/autoload /root/.vim/autoload
 
