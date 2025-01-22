@@ -30,9 +30,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     vim-nox \  
     # Clipboard integration
     xclip \  
+    fd-find \
+    ripgrep \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* && \
-    ln -s /usr/bin/batcat /usr/bin/bat
+    ln -s /usr/bin/batcat /usr/bin/bat && \
+    ln -s $(which fdfind) /usr/bin/fd 
 
 ENV SHELL=/bin/bash
 
@@ -96,6 +99,7 @@ COPY --from=tools /root/.vim/autoload /root/.vim/autoload
 COPY ${DOTFILES_BASENAME}/bash-rc/starship.toml /root/.config/starship.toml
 
 # Copy bashrc and other dotfiles
+COPY ${DOTFILES_BASENAME}/bash-rc/.fzf-config /root/.fzf-config
 COPY ${DOTFILES_BASENAME}/bash-rc/.bashrc /root/.bashrc
 COPY ${DOTFILES_BASENAME}/bash-rc/.editorconfig /root/.editorconfig
 COPY ${DOTFILES_BASENAME}/bash-rc/.terminfo /root/.terminfo
